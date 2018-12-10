@@ -5,14 +5,29 @@
 ## 準備
 
 ```
+$ cd ~
+$ git clone https://github.com/yamagame/dora-browser
+$ cd dora-browser
 $ npm i
 ```
 
 ## 実行
 
 ```
+$ cd ~
+$ cd dora-browser
 $ npm start
 ```
+
+## 自動起動
+
+ラズベリーパイで自動起動するには、~/.config/lxsession/LXDE-pi/autostartに下記の１行を追加します。
+
+```
+@/home/pi/dora-browser/start.sh
+```
+
+※dora-browserのディレクトリの位置が異なる場合は変更してください。
 
 ## 使い方
 
