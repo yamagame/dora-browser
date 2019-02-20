@@ -1,6 +1,6 @@
 # dora-browser 
 
-遠隔操作できるブラウザです。
+遠隔操作できるブラウザです。Electronを使用しています。
 
 ## 準備
 
@@ -33,26 +33,28 @@ $ npm start
 
 実行すると、内部でWebサーバーが起動します。POSTリクエストを使ってコマンドを送信するとコントロールできます。
 
+ウインドウには名前をつけて操作します。名前を使うことで複数のウインドウを操作することができます。
+
 以下の例では、localhostで操作することを想定して説明しています。
 
-### createコマンド
+### openコマンド
 
 Windowを開くメッセージ
 
 ```
-$ curl -X POST http://localhost:5000/create/[ウインドウ名]
+$ curl -X POST http://localhost:5000/open/[ウインドウ名]
 ```
 
 例：
 
 ```
-$ curl -X POST http://localhost:5000/create/main
+$ curl -X POST http://localhost:5000/open/main
 ```
 
-以下のようにすると開くページのURLを指定できます。
+以下のようにすると開くページのURLを指定できます。信用のないウェブページは開かないでください。
 
 ```
-$ curl -X POST -d '{"url":"https://www.apple.com/"}' --header "content-type:application/json" http://localhost:5000/create/main
+$ curl -X POST -d '{"url":"https://www.apple.com/"}' --header "content-type:application/json" http://localhost:5000/open/main
 ```
 
 ### reloadコマンド
@@ -75,6 +77,34 @@ $ curl -X POST http://localhost:5000/close/[ウインドウ名]
 
 ```
 $ curl -X POST http://localhost:5000/close/main
+```
+
+### showコマンド
+
+指定したウインドウを表示して手前に持ってきます。
+
+```
+$ curl -X POST http://localhost:5000/show/[ウインドウ名]
+```
+
+例：
+
+```
+$ curl -X POST http://localhost:5000/show/main
+```
+
+### hideコマンド
+
+指定したウインドウを非表示して手前に持ってきます。
+
+```
+$ curl -X POST http://localhost:5000/hide/[ウインドウ名]
+```
+
+例：
+
+```
+$ curl -X POST http://localhost:5000/hide/main
 ```
 
 ### printコマンド
