@@ -213,6 +213,9 @@ const openWindow = (req) => {
       window.setFullScreen(fullscreen);
     }
   }
+  window.on('closed', () => {
+    delete windows[name];
+  })
   if ('timeout' in req.body) {
     setTimeout(() => {
       window.close();
@@ -226,23 +229,27 @@ const loadWindow = (req, res) => {
   const { name } = req.params;
   const window = openWindow(req);
   if (window) {
-    window.setTitle(name)
-    const openURL = (url) => {
-      if (window.webContents.getURL() !== url) {
-        window.loadURL(url)
+    try {
+      window.setTitle(name)
+      const openURL = (url) => {
+        if (window.webContents.getURL() !== url) {
+          window.loadURL(url)
+        }
       }
-    }
-    if ('url' in req.body) {
-      const { url } = req.body;
-      openURL(url);
-    }
-    if ('file' in req.body) {
-      const { file } = req.body;
-      if (path.normalize(file) === file) {
-        openURL(`file://${__dirname}/public/${file}`);
+      if ('url' in req.body) {
+        const { url } = req.body;
+        openURL(url);
       }
+      if ('file' in req.body) {
+        const { file } = req.body;
+        if (path.normalize(file) === file) {
+          openURL(`file://${__dirname}/public/${file}`);
+        }
+      }
+      window.show();
+    } catch(err) {
+      delete windows[name];
     }
-    window.show();
     res.send('OK\n')
   } else {
     res.statusCode = 400;
@@ -255,6 +262,10 @@ wapp.post('/create/:name', isValidKey, (req, res) => {
 })
 
 wapp.post('/load/:name', isValidKey, (req, res) => {
+  loadWindow(req, res);
+})
+
+wapp.post('/open/:name', isValidKey, (req, res) => {
   loadWindow(req, res);
 })
 
