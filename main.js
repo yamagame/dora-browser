@@ -361,6 +361,39 @@ wapp.post('/print/:name', isValidKey, (req, res) => {
   }
 })
 
+wapp.post('/printToPDF/:name', isValidKey, (req, res) => {
+  const { name } = req.params;
+  const { filename } = req.body;
+  const window = openWindow(req);
+  if (window) {
+    const p = path.normalize(path.join(settings.picture_directory, filename));
+    if (p.indexOf(settings.picture_directory) !== 0) {
+      console.log('invalid filename');
+      return res.send('NG');
+    }
+    let contents = window.webContents;
+    contents.printToPDF({
+      pageSize: 'A4',
+      landscape: true,
+    }, (error, data) => {
+      if (error) {
+        res.send('NG\n');
+      } else {
+        fs.writeFile(p, data, (error) => {
+          if (error) {
+            res.send('NG\n');
+          } else {
+            res.send('OK\n');
+          }
+        })
+      }
+    })
+  } else {
+    res.statusCode = 400;
+    res.end(`Missing window ${name}\n`);
+  }
+})
+
 wapp.post('/fullscreen/:name', isValidKey, (req, res) => {
   const { name } = req.params;
   const window = openWindow(req);
@@ -398,9 +431,14 @@ wapp.post('/capture/:name', isValidKey, (req, res) => {
   const { filename } = req.body;
   const window = openWindow(req);
   if (window) {
+    const p = path.normalize(path.join(settings.picture_directory, filename));
+    if (p.indexOf(settings.picture_directory) !== 0) {
+      console.log('invalid filename');
+      return res.send('NG');
+    }
     window.capturePage((image) => {
       const buffer = image.toJPEG(100);
-      fs.writeFile(path.join(settings.picture_directory, filename), buffer, (err) => {
+      fs.writeFile(p, buffer, (err) => {
         res.send('OK');
       })
     })
