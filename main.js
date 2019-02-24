@@ -273,7 +273,27 @@ wapp.post('/reload/:name', isValidKey, (req, res) => {
   const { name } = req.params;
   const window = openWindow(req);
   if (window) {
-    window.reload()
+    try {
+      window.setTitle(name)
+      const openURL = (url) => {
+        if (window.webContents.getURL() !== url) {
+          window.loadURL(url)
+        }
+      }
+      if ('url' in req.body) {
+        const { url } = req.body;
+        openURL(url);
+      }
+      if ('file' in req.body) {
+        const { file } = req.body;
+        if (path.normalize(file) === file) {
+          openURL(`file://${__dirname}/public/${file}`);
+        }
+      }
+      window.reload()
+    } catch(err) {
+      window.reload()
+    }
     res.send('OK\n')
   } else {
     res.statusCode = 400;
