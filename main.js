@@ -426,8 +426,8 @@ wapp.post('/isLoading/:name', isValidKey, (req, res) => {
   }
 })
 
-wapp.post('/capture/:name', isValidKey, (req, res) => {
-  const { name } = req.params;
+function capture(req, res, params) {
+  const { name, format } = params;
   const { filename } = req.body;
   const window = openWindow(req);
   if (window) {
@@ -437,7 +437,7 @@ wapp.post('/capture/:name', isValidKey, (req, res) => {
       return res.send('NG');
     }
     window.capturePage((image) => {
-      const buffer = image.toJPEG(100);
+      const buffer = (format==='png') ? image.toPNG() : image.toJPEG(100);
       fs.writeFile(p, buffer, (err) => {
         res.send('OK');
       })
@@ -446,6 +446,15 @@ wapp.post('/capture/:name', isValidKey, (req, res) => {
     res.statusCode = 400;
     res.end(`Missing window ${name}\n`);
   }
+}
+
+wapp.post('/capture/:name', isValidKey, (req, res) => {
+  const { name, } = req.params;
+  capture(req, res, { name, format: 'jpeg' });
+})
+
+wapp.post('/capture/:format/:name', isValidKey, (req, res) => {
+  capture(req, res, req.params);
 })
 
 const server = require('http').Server(wapp);
