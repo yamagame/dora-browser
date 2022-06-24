@@ -18,7 +18,7 @@
     "express-session": "^1.15.6",
     "jws": "^3.1.5",
     "memorystore": "^1.6.0",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.6.7",
     "socket.io": "^2.1.1"
   },
   "devDependencies": {
